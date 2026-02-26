@@ -11,12 +11,18 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    env: 
+      AWS_ACCESS_KEY_ID: ${{ secrets.access }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.secret }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+
+      - name: Debug AWS Identity
+        run: aws sts get-caller-identity
 
       - name: Terraform Init
         run: terraform init
