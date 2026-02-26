@@ -1,0 +1,29 @@
+name: Terraform CI
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to deploy"
+        required: true
+        default: "dev"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -var-file=env/${{ github.event.inputs.environment }}.tfvars
+
+      - name: Terraform Apply
+        if: github.event.inputs.environment == 'prod'
+        run: terraform apply -auto-approve -var-file=env/${{ github.event.inputs.environment }}.tfvars
